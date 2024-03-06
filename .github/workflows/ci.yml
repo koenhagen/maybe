@@ -3,7 +3,6 @@ name: CI
 on:
   pull_request:
   push:
-    branches: [main]
 
 jobs:
   scan_ruby:
@@ -90,11 +89,15 @@ jobs:
           RAILS_ENV: test
           DATABASE_URL: postgres://postgres:postgres@localhost:5432
           # REDIS_URL: redis://localhost:6379/0
-        run: |
-          bin/rails db:create
-          bin/rails db:schema:load
-          bin/rails test:all
-          bin/rails db:seed
+        uses: koenhagen/measure-energy-action@v0.33
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          run: |
+            bin/rails db:create
+            bin/rails db:schema:load
+            bin/rails test:all
+            bin/rails db:seed
+          count: 1
 
       - name: Keep screenshots from failed system tests
         uses: actions/upload-artifact@v4
